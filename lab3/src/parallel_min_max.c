@@ -66,9 +66,9 @@ int main(int argc, char **argv) {
             pnum = atoi(optarg);
             // your code here
 
-            if(pnum <= 0 || pnum)
+            if(pnum <= 0 || pnum > array_size)
            {
-               printf("Array size is a positive number");
+               printf("Array size is a positive number less then array size");
                array_size = -1;
            }
 
@@ -105,12 +105,35 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  int *array = malloc(sizeof(int) * array_size);
+  int *array = (int*)malloc(sizeof(int) * array_size);
   GenerateArray(array, array_size, seed);
   int active_child_processes = 0;
 
   struct timeval start_time;
   gettimeofday(&start_time, NULL);
+
+  FILE* fp;
+  int** fd;
+
+  if(with_files)
+  {
+    fp = fopen("fake_pipe.txt","w");
+  }
+  else 
+  {
+    fd = (int**)malloc(pnum*sizeof(int*));
+    for(int i = 0; i < pnum; i++)
+    {
+        fd[i] = (int*)malloc(2 * sizeof(int));
+        if(pipe(fd[i]) == -1)
+        {
+            printf("Failing in making pipe.");
+            return 1;
+        }
+    }
+  }
+
+  int step = array_size/pnum;
 
   for (int i = 0; i < pnum; i++) {
     pid_t child_pid = fork();
@@ -120,12 +143,27 @@ int main(int argc, char **argv) {
       if (child_pid == 0) {
         // child process
 
+        struct MinMax cur;
+
+        if(i < pnum - 1)
+        {
+            cur = GetMinMax(array, i*step, (i+1)*step);
+        }
+        else
+        {
+            cur = GetMinMax(array, i*step, array_size);
+        }
+
         // parallel somehow
 
-        if (with_files) {
-          // use files here
-        } else {
-          // use pipe here
+        if (with_files) 
+        {
+          fwrite(&cur,sizeof(struct MinMax),1,fp);
+        } 
+        else 
+        {
+          write(fd[i][1],&cur,sizeof(struct MinMax));
+          close(fd[i][1]);
         }
         return 0;
       }
@@ -136,26 +174,33 @@ int main(int argc, char **argv) {
     }
   }
 
+  if(with_files)
+  fclose(fp);
+
   while (active_child_processes > 0) {
-    // your code here
-
-
-
+      wait(NULL);
     active_child_processes -= 1;
   }
 
-  struct MinMax min_max;
+  struct MinMax min_max,buff;
   min_max.min = INT_MAX;
   min_max.max = INT_MIN;
+  fp = fopen("fake_pipe.txt","r");
 
   for (int i = 0; i < pnum; i++) {
     int min = INT_MAX;
     int max = INT_MIN;
 
     if (with_files) {
-      // read from files
-    } else {
-      // read from pipes
+      fread(&buff,sizeof(struct MinMax),1,fp);
+      min = buff.min;
+      max = buff.max;
+    } 
+    else 
+    {
+      read(fd[i][0], &buff, sizeof(struct MinMax));
+      min = buff.min;
+      max = buff.max;
     }
 
     if (min < min_max.min) min_max.min = min;
