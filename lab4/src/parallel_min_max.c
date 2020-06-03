@@ -15,6 +15,11 @@
 #include "find_min_max.h"
 #include "utils.h"
 
+void handlr(int sig)
+{
+    printf("Timeout is over.\n");
+}
+
 int main(int argc, char **argv) {
   int seed = -1;
   int array_size = -1;
@@ -127,6 +132,12 @@ int main(int argc, char **argv) {
 
   FILE* fp;
   int** fd;
+
+  if(timeout > 0)
+  {
+      signal(SIGALRM, handlr);
+      alarm(timeout);
+  }
 
   if(with_files)
   {
