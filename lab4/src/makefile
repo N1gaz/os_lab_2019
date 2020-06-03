@@ -12,5 +12,5 @@ find_min_max: utils
 utils:
 	$(CC) -c utils.c -o utils.o
 
-clean:
+clear:
 	rm parallel_min_max.exe find_min_max.o utils.o
