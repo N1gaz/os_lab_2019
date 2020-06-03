@@ -15,9 +15,24 @@
 #include "find_min_max.h"
 #include "utils.h"
 
+
+bool is_timeout_ends = false;
+
 void handlr(int sig)
 {
     printf("Timeout is over.\n");
+    is_timeout_ends = true;
+}
+
+int genocyde(pid_t* children, int quant)
+{
+    for(int i = 0;i < quant;i++)
+    {
+        kill(children[i],SIGKILL);
+        printf("Process %d was slain :(\n",children[i]);
+    }
+
+    return -1;
 }
 
 int main(int argc, char **argv) {
@@ -158,9 +173,12 @@ int main(int argc, char **argv) {
   }
 
   int step = array_size/pnum;
+  int* children = (int*)calloc(pnum,sizeof(pid_t));
 
   for (int i = 0; i < pnum; i++) {
     pid_t child_pid = fork();
+    children[i] = child_pid;
+
     if (child_pid >= 0) {
       // successful fork
       active_child_processes += 1;
@@ -201,7 +219,16 @@ int main(int argc, char **argv) {
   if(with_files)
   fclose(fp);
 
+  int status;
+
   while (active_child_processes > 0) {
+    if(is_timeout_ends)
+        return genocyde(children,pnum);
+
+     if (waitpid(-1, &status, WNOHANG) > 0) 
+        {
+            active_child_processes -= 1;
+        }
       wait(NULL);
     active_child_processes -= 1;
   }
