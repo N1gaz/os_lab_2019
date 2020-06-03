@@ -1,19 +1,22 @@
 CC=g++
 CFLAGS=-I.
 
-all: parallel_min_max Shawn
+all: parallel_min_max Shawn process_memory
 
-parallel_min_max: find_min_max
+parallel_min_max: find_min_max parallel_min_max.c
 	$(CC) parallel_min_max.c find_min_max.o utils.o -o parallel_min_max.exe
 
-find_min_max: utils
+find_min_max: utils find_min_max.c find_min_max.h
 	$(CC) -c find_min_max.c -o find_min_max.o
 
-utils:
+utils: utils.c utils.h
 	$(CC) -c utils.c -o utils.o
 
-Shawn:
+Shawn: Shawn.c
 	$(CC) Shawn.c -o Shawn.exe
+
+process_memory: process_memory.c
+	$(CC) process_memory.c -o process_memory.exe
 
 clear:
 	rm parallel_min_max.exe find_min_max.o utils.o Shawn.exe
