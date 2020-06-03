@@ -19,4 +19,4 @@ process_memory: process_memory.c
 	$(CC) process_memory.c -o process_memory.exe
 
 clear:
-	rm parallel_min_max.exe find_min_max.o utils.o Shawn.exe
+	rm parallel_min_max.exe find_min_max.o utils.o Shawn.exe process_memory.exe
