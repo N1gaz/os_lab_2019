@@ -99,13 +99,6 @@ int main(int argc, char **argv) {
   int *array = (int*)calloc(array_size,sizeof(int));
   GenerateArray(array, array_size, seed);
 
-  for(int i = 0;i < array_size;i++)
-  {
-  printf("%d\n",array[i]);
-  }
-
-  
-
   struct timeval start_time;
   gettimeofday(&start_time, NULL);
 
@@ -138,7 +131,6 @@ int main(int argc, char **argv) {
   for (uint32_t i = 0; i < threads_num; i++) {
     intmax_t sum = 0;
     pthread_join(threads[i], (void **)&sum);
-    printf("%d:%d\n",i,sum);
     total_sum += sum;
   }
 
