@@ -22,18 +22,17 @@ int main(int argc, char **argv) {
   uint32_t threads_num = 0;
   uint32_t array_size = 0;
   uint32_t seed = 0;
-  pthread_t threads[threads_num];
 
+  static struct option options[] = {{"threads_num", required_argument, 0, 0},
+                                      {"seed", required_argument, 0, 0},
+                                      {"array_size", required_argument, 0, 0},
+                                      {0, 0, 0, 0}};
+  
   while (true) {
     int current_optind = optind ? optind : 1;
 
-    static struct option options[] = {{"threads_num", required_argument, 0, 0},
-                                      {"array_size", required_argument, 0, 0},
-                                      {"seed", required_argument, 0, 0},
-                                      {0, 0, 0, 0}};
-
     int option_index = 0;
-    int c = getopt_long(argc, argv, "f", options, &option_index);
+    int c = getopt_long(argc, argv, "", options, &option_index);
 
     if (c == -1) break;
 
@@ -43,30 +42,27 @@ int main(int argc, char **argv) {
           case 0:
             threads_num = atoi(optarg);
 
-           if(threads_num <= 0)
+           if(threads_num == 0)
            {
                printf("Threads number is a positive number\n");
-               seed = -1;
            }
 
             break;
           case 1:
-            array_size = atoi(optarg);
-            
-            if(seed <= 0)
+            seed = atoi(optarg);
+
+            if(seed == 0)
            {
                printf("Seed is a positive number\n");
-               seed = -1;
            }
 
             break;
           case 2:
             array_size = atoi(optarg);
 
-            if(array_size <= 0)
+            if(array_size == 0)
            {
                printf("Array size is a positive number.\n");
-               array_size = -1;
            }
 
             break;
@@ -74,9 +70,6 @@ int main(int argc, char **argv) {
           defalut:
             printf("Index %d is out of options\n", option_index);
         }
-        break;
-
-      case '?':
         break;
 
       default:
@@ -101,25 +94,51 @@ int main(int argc, char **argv) {
    * Generate array here
    */
 
+  pthread_t threads[threads_num];
+
+  int *array = (int*)calloc(array_size,sizeof(int));
+  GenerateArray(array, array_size, seed);
+
+  for(int i = 0;i < array_size;i++)
+  {
+  printf("%d\n",array[i]);
+  }
+
+  
+
   struct timeval start_time;
   gettimeofday(&start_time, NULL);
 
-  int *array = (int*)malloc(sizeof(int) * array_size);
-  GenerateArray(array, array_size, seed);
-
 
   struct SumArgs args[threads_num];
-  for (uint32_t i = 0; i < threads_num; i++) {
-    if (pthread_create(&threads[i], NULL, ThreadSum, (void *)&args)) {
+  args[0].begin = 0;
+
+
+  for (uint32_t i = 0; i < threads_num; i++) 
+  {
+      args[i].array = array;
+        if (i != 0)
+            args[i].begin = args[i - 1].end;
+        if (args[i].begin == array_size)
+            break;
+        if (i != threads_num - 1) {
+            args[i].end = (i + 1) * array_size / threads_num;
+           
+        } else {
+            args[i].end = array_size;
+        }
+
+    if (pthread_create(&threads[i], NULL, ThreadSum, (void *)(args + i)) != 0) {
       printf("Error: pthread_create failed!\n");
       return 1;
     }
   }
 
-  int total_sum = 0;
+  intmax_t total_sum = 0;
   for (uint32_t i = 0; i < threads_num; i++) {
-    int sum = 0;
+    intmax_t sum = 0;
     pthread_join(threads[i], (void **)&sum);
+    printf("%d:%d\n",i,sum);
     total_sum += sum;
   }
 
