@@ -139,6 +139,6 @@ int main(int argc, char **argv) {
 
   printf("Total: %d\n", total_sum);
   printf("Elapsed time: %fms\n", elapsed_time);
-  fflush(NULL);
+  
   return 0;
 }
