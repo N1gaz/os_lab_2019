@@ -42,39 +42,33 @@ int main(int argc, char **argv) {
         switch (option_index) {
           case 0:
             threads_num = atoi(optarg);
-            // your code here
 
            if(threads_num <= 0)
            {
-               printf("Threads number is a positive number");
+               printf("Threads number is a positive number\n");
                seed = -1;
            }
 
-            // error handling
             break;
           case 1:
             array_size = atoi(optarg);
-            // your code here
             
             if(seed <= 0)
            {
-               printf("Seed is a positive number");
+               printf("Seed is a positive number\n");
                seed = -1;
            }
 
-            // error handling
             break;
           case 2:
             array_size = atoi(optarg);
-            // your code here
 
             if(array_size <= 0)
            {
-               printf("Array size is a positive number.");
+               printf("Array size is a positive number.\n");
                array_size = -1;
            }
 
-            // error handling
             break;
 
           defalut:
@@ -139,6 +133,6 @@ int main(int argc, char **argv) {
 
   printf("Total: %d\n", total_sum);
   printf("Elapsed time: %fms\n", elapsed_time);
-  
+
   return 0;
 }
