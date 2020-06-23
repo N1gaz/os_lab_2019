@@ -6,10 +6,25 @@
 #include <getopt.h>
 #include <sys/time.h>
 
-uint64_t result = 1;
-uint64_t factorial = 1;
-
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+
+typedef struct args
+{
+    uint64_t factorial;
+    uint64_t result;
+    uint64_t multiplier;
+    uint64_t mod;
+}args;
+
+void *calculations(void* arg)
+{
+    args* buff = (args*)arg;
+    buff->factorial *= buff->multiplier;
+    buff->result *= buff->multiplier;
+    buff->result %= buff->mod; 
+    return (void*)buff;
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -77,12 +92,18 @@ int main(int argc, char* argv[])
     return 1;
   }
   
+  args* arguments;
+  arguments->mod = mod;
+  arguments->factorial = 1;
+  arguments->result = 1;
   pthread_t threads[pnum];
 
-    
-
-    printf("Factorial of %i is equals %i.\n",k , factorial);
-    printf("Factorial of %i at mod %i is equals %i.\n",k,mod,result);
+  for(uint64_t i = 0;i < pnum; i++)
+  {
+      arguments->multiplier = i + 1;
+    if(pthread_create(&threads[i], NULL, calculations, (void*) arguments) != 0)
+    perror("pthread_create");
+  }
 
     return 0;
 }
