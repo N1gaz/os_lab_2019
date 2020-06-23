@@ -16,13 +16,15 @@ typedef struct args
     uint64_t mod;
 }args;
 
-void *calculations(void* arg)
+void calculations(void* __arg)
 {
-    args* buff = (args*)arg;
+    pthread_mutex_lock(&mut);
+    args* buff = (args*)__arg;
     buff->factorial *= buff->multiplier;
     buff->result *= buff->multiplier;
     buff->result %= buff->mod; 
-    return (void*)buff;
+    __arg = (void*)buff;
+    pthread_mutex_unlock(&mut);
 }
 
 
@@ -92,18 +94,32 @@ int main(int argc, char* argv[])
     return 1;
   }
   
-  args* arguments;
+  args* arguments = (args*)malloc(sizeof(args));
   arguments->mod = mod;
   arguments->factorial = 1;
   arguments->result = 1;
   pthread_t threads[pnum];
 
-  for(uint64_t i = 0;i < pnum; i++)
+  for(uint64_t i = 0;i < k; i++)
   {
       arguments->multiplier = i + 1;
-    if(pthread_create(&threads[i], NULL, calculations, (void*) arguments) != 0)
+    if(pthread_create(&threads[i % pnum], NULL, (void*)calculations, (void*) arguments) != 0)
+    {
     perror("pthread_create");
+    exit(1);
+    }
+
+    if(pthread_join(threads[i % pnum],NULL))
+        {
+            perror("pthread_join");
+            exit(1);
+        }
   }
+
+    printf("Factorial %i is equals %i.\n",k,arguments->factorial);
+    printf("Factorial %i modulo %i is equals %i.\n",k, mod,arguments->result);
+
+    free(arguments);
 
     return 0;
 }
