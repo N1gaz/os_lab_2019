@@ -89,7 +89,6 @@ int main(int argc, char **argv) {
 
         break;
       case 2:
-        // TODO: your code here
         memcpy(servers, optarg, strlen(optarg));
         break;
       default:
@@ -135,9 +134,12 @@ int main(int argc, char **argv) {
       fscanf(servers_storage,"%s %d\n",to[i].ip,&to[i].port);
   }
   
-  
+  fclose(servers_storage);
   // TODO: work continiously, rewrite to make parallel
-  for (int i = 0; i < servers_num; i++) {
+  int step = k/servers_num;
+
+  for (int i = 0; i < servers_num; i++) 
+  { 
     struct hostent *hostname = gethostbyname(to[i].ip);
     if (hostname == NULL) {
       fprintf(stderr, "gethostbyname failed with %s\n", to[i].ip);
@@ -162,8 +164,15 @@ int main(int argc, char **argv) {
 
     // TODO: for one server
     // parallel between servers
-    uint64_t begin = 1;
-    uint64_t end = k;
+    uint64_t begin = i*step;
+    if((i+1)*step <= servers_num)
+    {
+    uint64_t end = (i+1)*step;
+    }
+    else
+    {
+    uint64_t end = servers_num;
+    }
 
     char task[sizeof(uint64_t) * 3];
     memcpy(task, &begin, sizeof(uint64_t));
@@ -189,6 +198,8 @@ int main(int argc, char **argv) {
 
     close(sck);
   }
+
+
   free(to);
 
   return 0;
