@@ -69,11 +69,24 @@ int main(int argc, char **argv) {
       switch (option_index) {
       case 0:
         ConvertStringToUI64(optarg, &k);
-        // TODO: your code here
+        // TODO: 
+        
+        if(k <= 0)
+        {
+            printf("Argumet is a positive number.\n");
+            exit(1);
+        }
+
         break;
       case 1:
         ConvertStringToUI64(optarg, &mod);
-        // TODO: your code here
+        // TODO:
+        
+        if(mod <= 0)
+        {
+            printf("Modulo is a positive number.\n");
+        }
+
         break;
       case 2:
         // TODO: your code here
@@ -98,13 +111,37 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  // TODO: for one server here, rewrite with servers from file
-  unsigned int servers_num = 1;
-  struct Server *to = malloc(sizeof(struct Server) * servers_num);
-  // TODO: delete this and parallel work between servers
-  to[0].port = 20001;
-  memcpy(to[0].ip, "127.0.0.1", sizeof("127.0.0.1"));
+  // TODO: 
+    FILE* servers_storage = fopen(servers,"r");
 
+    if(servers_storage == NULL)
+    {
+        printf("Can't open %s.\n",servers);
+    }
+
+  unsigned int servers_num = 0;
+
+    while(!feof(servers_storage))
+    {
+        if(fgetc(servers_storage) == '\n')
+        servers_num++;
+    }
+
+    fseek(servers_storage, 0, SEEK_SET);
+
+
+  struct Server *to = (struct Server*)malloc(sizeof(struct Server) * servers_num);
+  
+  for(int i = 0; i < servers_num; i++)
+  {
+      to[i].ip = fscanf(servers_storage,"%d.%d.%d.%d");
+
+      printf("IP %d server is %s:%d",i,to[i].ip,to[i].port);
+  }
+  
+  
+  return 0;
+  /*
   // TODO: work continiously, rewrite to make parallel
   for (int i = 0; i < servers_num; i++) {
     struct hostent *hostname = gethostbyname(to[i].ip);
@@ -160,5 +197,5 @@ int main(int argc, char **argv) {
   }
   free(to);
 
-  return 0;
+  return 0;*/
 }
