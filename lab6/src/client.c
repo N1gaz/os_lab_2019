@@ -165,6 +165,7 @@ int main(int argc, char **argv) {
     // TODO: for one server
     // parallel between servers
     uint64_t begin = i*step;
+    uint64_t end;
     if((i+1)*step <= servers_num)
     {
     uint64_t end = (i+1)*step;
