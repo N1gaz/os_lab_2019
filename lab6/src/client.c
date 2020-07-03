@@ -133,13 +133,9 @@ int main(int argc, char **argv) {
   for(int i = 0; i < servers_num; i++)
   {
       fscanf(servers_storage,"%s %d\n",to[i].ip,&to[i].port);
-      printf("IP %d server is %s\n",i,to[i].ip);
-      printf("Port %d server is %d\n",i,to[i].port);
   }
   
   
-  return 0;
-  /*
   // TODO: work continiously, rewrite to make parallel
   for (int i = 0; i < servers_num; i++) {
     struct hostent *hostname = gethostbyname(to[i].ip);
@@ -151,7 +147,7 @@ int main(int argc, char **argv) {
     struct sockaddr_in server;
     server.sin_family = AF_INET;
     server.sin_port = htons(to[i].port);
-    server.sin_addr.s_addr = *((unsigned long *)hostname->h_addr);
+    server.sin_addr.s_addr = *((unsigned long *)hostname->h_addr_list[0]);
 
     int sck = socket(AF_INET, SOCK_STREAM, 0);
     if (sck < 0) {
@@ -195,5 +191,5 @@ int main(int argc, char **argv) {
   }
   free(to);
 
-  return 0;*/
+  return 0;
 }
