@@ -128,15 +128,13 @@ int main(int argc, char **argv) {
     }
 
     fseek(servers_storage, 0, SEEK_SET);
-
-
   struct Server *to = (struct Server*)malloc(sizeof(struct Server) * servers_num);
   
   for(int i = 0; i < servers_num; i++)
   {
-      to[i].ip = fscanf(servers_storage,"%d.%d.%d.%d");
-
-      printf("IP %d server is %s:%d",i,to[i].ip,to[i].port);
+      fscanf(servers_storage,"%s %d\n",to[i].ip,&to[i].port);
+      printf("IP %d server is %s\n",i,to[i].ip);
+      printf("Port %d server is %d\n",i,to[i].port);
   }
   
   
