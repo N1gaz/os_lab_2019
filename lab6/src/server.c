@@ -35,7 +35,7 @@ uint64_t MultModulo(uint64_t a, uint64_t b, uint64_t mod) {
 uint64_t Factorial(const struct FactorialArgs *args) {
   uint64_t ans = 1;
 
-  for(int i = args->begin; i < args->end;i++)
+  for(int i = args->begin; i < args->end  + 1;i++)
   {
     ans *=MultModulo(ans, i, args->mod);
   }
@@ -171,12 +171,15 @@ int main(int argc, char **argv) {
       memcpy(&mod, from_client + 2 * sizeof(uint64_t), sizeof(uint64_t));
 
       fprintf(stdout, "Receive: %llu %llu %llu\n", begin, end, mod);
+      uint64_t step = (end-begin)/tnum;
 
       struct FactorialArgs args[tnum];
       for (uint32_t i = 0; i < tnum; i++) {
         // TODO: parallel somehow
-        args[i].begin = begin;
-        args[i].end = end;
+        args[i].begin = begin + step*i;
+        
+        args[i].end = (begin + step * (i+1)) < end ? begin + step * (i+1) : end;
+
         args[i].mod = mod;
 
         if (pthread_create(&threads[i], NULL, ThreadFactorial,

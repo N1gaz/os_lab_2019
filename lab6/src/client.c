@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
     }
     else
     {
-     end = k + 1;
+     end = k;
     }
 
     char task[sizeof(uint64_t) * 3];
