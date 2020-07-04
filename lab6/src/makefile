@@ -9,4 +9,4 @@ client: client.c
 	$(CC) client.c -o client.exe
 
 server: server.c
-	$(CC) server.c -o server.exe
+	$(CC) server.c -lpthread  -o server.exe

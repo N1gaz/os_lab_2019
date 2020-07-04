@@ -35,7 +35,10 @@ uint64_t MultModulo(uint64_t a, uint64_t b, uint64_t mod) {
 uint64_t Factorial(const struct FactorialArgs *args) {
   uint64_t ans = 1;
 
-  // TODO: your code here
+  for(int i = args->begin; i < args->end;i++)
+  {
+    ans *=MultModulo(ans, i, args->mod);
+  }
 
   return ans;
 }
@@ -68,7 +71,7 @@ int main(int argc, char **argv) {
       case 0:
         port = atoi(optarg);
         
-        if(port < 0)
+        if(port <= 0)
         {
             printf("Port is a positive number.\n");
             exit(1);
@@ -78,8 +81,12 @@ int main(int argc, char **argv) {
       case 1:
         tnum = atoi(optarg);
         
-        printf("Threads num is a positive number.\n");
-        exit(1);
+        if(tnum <= 0)
+        {
+            printf("Threads num is a positive number.\n");
+            exit(1);
+        }
+        
 
         break;
       default:
