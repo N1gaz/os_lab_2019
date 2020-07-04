@@ -164,19 +164,27 @@ int main(int argc, char **argv) {
 
     // TODO: for one server
     // parallel between servers
-    uint64_t begin = i*step;
+    
+    printf("Step: %d\n",step);
+
+    uint64_t begin = i*step + 1 ;
+
+    printf("Begin: %d\n", begin);
+
     uint64_t end;
-    if((i+1)*step < servers_num)
+
+
+    if((i+1)*step + 1 < k)
     {
-    uint64_t end = (i+1)*step;
+    uint64_t end = (i+1)*step + 1;
+    printf("End: %d\n",end);
+
     }
     else
     {
-    uint64_t end = servers_num;
+    uint64_t end = k;
+    printf("End: %d\n",end);
     }
-
-
-    printf("Begin = %d\n End = %d\n Mod = %d\n",begin,end,mod);
 
     char task[sizeof(uint64_t) * 3];
     memcpy(task, &begin, sizeof(uint64_t));
