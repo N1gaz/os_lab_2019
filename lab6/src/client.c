@@ -166,18 +166,10 @@ int main(int argc, char **argv) {
     // parallel between servers
     
     uint64_t begin = i*step + 1 ;
+    uint64_t end = ((i+1)*step < k) ? (i+1)*step : k;
 
-    uint64_t end;
 
-
-    if((i+1)*step + 1 < k)
-    {
-     end = (i+1)*step;
-    }
-    else
-    {
-     end = k;
-    }
+    
 
     char task[sizeof(uint64_t) * 3];
     memcpy(task, &begin, sizeof(uint64_t));
@@ -200,7 +192,8 @@ int main(int argc, char **argv) {
     uint64_t answer = 1;
     uint64_t from = 0;
     memcpy(&from, response, sizeof(uint64_t));
-    answer *= from;
+    printf("from: %d",from);
+    answer = answer * from;
     printf("answer: %llu\n", answer);
 
     close(sck);

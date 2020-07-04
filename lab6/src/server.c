@@ -177,9 +177,9 @@ int main(int argc, char **argv) {
       for (uint32_t i = 0; i < tnum; i++) {
         // TODO: parallel somehow
         args[i].begin = begin + step*i;
-        
-        args[i].end = (begin + step * (i+1)) < end ? begin + step * (i+1) : end;
-
+        printf("begin: %d\n",args[i].begin);
+        args[i].end = ((begin + step * (i+1)) < end) ? begin + step * (i+1) : end;
+        printf("end: %d\n",args[i].end);
         args[i].mod = mod;
 
         if (pthread_create(&threads[i], NULL, ThreadFactorial,
