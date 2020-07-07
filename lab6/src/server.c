@@ -137,15 +137,13 @@ int main(int argc, char **argv) {
       memcpy(&mod, from_client + 2 * sizeof(uint64_t), sizeof(uint64_t));
 
       fprintf(stdout, "Receive: %llu %llu %llu\n", begin, end, mod);
-      uint64_t step = (end-begin)/tnum;
+      uint64_t step = (end-begin)/tnum + 1;
 
       struct FactorialArgs args[tnum];
       for (uint32_t i = 0; i < tnum; i++) {
         // TODO: parallel somehow
-        args[i].begin = begin + step*i;
-        printf("begin: %d\n",args[i].begin);
+        args[i].begin = begin + step*i + ((i == 0) ? 0 : 1);
         args[i].end = ((begin + step * (i+1)) < end) ? begin + step * (i+1) : end;
-        printf("end: %d\n",args[i].end);
         args[i].mod = mod;
 
         if (pthread_create(&threads[i], NULL, ThreadFactorial,

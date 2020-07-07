@@ -125,8 +125,8 @@ int main(int argc, char **argv) {
   
   fclose(servers_storage);
   // TODO: work continiously, rewrite to make parallel
-  int step = k/servers_num;
-
+  int step = k/servers_num + 1;
+  uint64_t answer = 1;
   for (int i = 0; i < servers_num; i++) 
   { 
     struct hostent *hostname = gethostbyname(to[i].ip);
@@ -178,16 +178,15 @@ int main(int argc, char **argv) {
 
     // TODO: from one server
     // unite results
-    uint64_t answer = 1;
+    
     uint64_t from = 0;
     memcpy(&from, response, sizeof(uint64_t));
-    printf("from: %d",from);
-    answer = answer * from;
-    printf("answer: %llu\n", answer);
+    answer = MultModulo(answer, from, mod);
+    
 
     close(sck);
   }
-
+  printf("answer: %llu\n", answer);
 
   free(to);
 

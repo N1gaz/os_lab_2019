@@ -1,3 +1,4 @@
+
 #include "factorial.h"
 
 
@@ -19,7 +20,7 @@ uint64_t Factorial(const struct FactorialArgs *args) {
 
   for(int i = args->begin; i < args->end  + 1;i++)
   {
-    ans *=MultModulo(ans, i, args->mod);
+    ans = MultModulo(ans, i, args->mod);
   }
 
   return ans;
