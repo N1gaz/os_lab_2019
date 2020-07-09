@@ -15,10 +15,12 @@ int main(int argc, char *argv[]) {
   int nread;
   
   struct sockaddr_in servaddr;
-  if (argc < 4) {
-    printf("Too few arguments \n");
+  
+  if (argc != 4) {
+    printf("usage: client <IPaddress of server> <port> <bufsize>\n");
     exit(1);
   }
+
   int BUFSIZE = atoi(argv[3]);
   char buf[atoi(argv[3])];
 

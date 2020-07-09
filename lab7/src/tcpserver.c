@@ -12,6 +12,11 @@
 int main(int argc, char** argv) 
 {
   const size_t kSize = sizeof(struct sockaddr_in);
+  
+  if (argc != 3) {
+    printf("usage: server <port> <bufsize>\n");
+    exit(1);
+  }
 
   int lfd, cfd;
   int nread;
